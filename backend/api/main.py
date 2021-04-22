@@ -68,7 +68,7 @@ def get_thread(thread_id: int, db: Session = Depends(get_db)):
     messages = crud.get_messages(db=db, thread=thread)
     return {'messages': messages}
     
-    
+
 class ConnectionManager:
     def __init__(self):
         self.active_connections: List[WebSocket] = []
@@ -83,9 +83,9 @@ class ConnectionManager:
     async def send_personal_message(self, message: str, websocket: WebSocket):
         await websocket.send_text(message)
 
-    async def broadcast(self, message: str, username: str):
+    async def broadcast(self, data: str):
         for connection in self.active_connections:
-            await connection.send_text({"message":message, "username": username})
+            await connection.send_text(data)
 
 
 manager = ConnectionManager()
@@ -97,7 +97,7 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     try:
         while True:
             data = await websocket.receive_text()
-            print(data)
-            await manager.broadcast(json.loads(data)["message"], json.loads(data)["username"])
+            await manager.send_personal_message(f"You wrote: {data}", websocket)
+            await manager.broadcast(data)
     except WebSocketDisconnect:
         manager.disconnect(websocket)

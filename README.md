@@ -1,6 +1,6 @@
 ﻿# Knock-Challange
 
-## Project setup
+## API setup
 ```
 ..\Knock-Challange\backend>pip install requirements.txt
 ```
